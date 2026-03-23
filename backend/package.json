@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Api for task-manager",
+  "main": "src/index.ts",
+  "author": "Łukasz",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1",
+    "prisma": "^7.5.0"
+  }
+}
