@@ -6,7 +6,12 @@
   "author": "Łukasz",
   "license": "MIT",
   "dependencies": {
-    "express": "^5.2.1",
+    "@prisma/client": "^7.5.0",
+    "@supabase/supabase-js": "^2.100.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
     "prisma": "^7.5.0"
   }
 }
