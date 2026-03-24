@@ -1,16 +1,34 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from './generated/prisma/client';
+import 'dotenv/config';
+import { taskSchema, userSchema } from './schemas';
+import z from 'zod';
+import path from 'node:path';
 
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+export const prisma = new PrismaClient({ adapter });
 const app = express()
 app.use(express.json())
 const port = 3000
 app.post('/user', async(req, res) => {
- const user = await prisma.user.create({
+
+userSchema.parse(req.body)
+const user = await prisma.user.create({
   data: {email: req.body.email,
     password: req.body.password
   }
  })
+  res.json(user)
+
+
+
+})
+app.get('/user', async(req, res) => {
+ const user = await prisma.user.findMany()
   res.json(user)
 })
 app.get('/tasks', async(req, res) => {
@@ -25,25 +43,43 @@ app.get('/tasks/:id', async(req, res) => {
    res.json(task)
 })
 app.post('/tasks', async(req, res) => {
-  const task = await prisma.task.create({
+  try{
+
+taskSchema.parse(req.body)
+ const task = await prisma.task.create({
     data: req.body
+  
   })
-  res.json(task)
+      res.json(task)
+
+  }catch(error){
+
+  }
+ 
+
 })
 app.put('/tasks/:id', async(req, res) => {
-   const taskId =  await req.params.id;
-    const task = prisma.task.update({
+  try{
+   const taskId =  req.params.id;
+    const task = await prisma.task.update({
     data: {title: req.body.title,
-      desription: req.body.description,
+      description: req.body.description,
       status: req.body.status
     },
     where: {id: Number(taskId)}
   })
-  res.json(task)
+ res.json(task)
+
+
+  }catch(error){
+
+  }
+
+ 
 })
 app.delete('/tasks/:id', async (req, res) => {
-   const taskId = await req.params.id;
-   const deleteTask = prisma.task.delete({
+   const taskId =  req.params.id;
+   const deleteTask =await prisma.task.delete({
     where: {id: Number(taskId)}
    })
   res.send(deleteTask)

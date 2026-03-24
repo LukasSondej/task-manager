@@ -4,8 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
- 
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -20,7 +20,7 @@ task Task[]
 model Task {
   id Int @id @default(autoincrement())
   title String 
-  desription String?
+  description String?
   status String @default("TODO")
   userId Int
   user User @relation(fields: [userId], references: [id])
