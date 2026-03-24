@@ -3,9 +3,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from './generated/prisma/client';
 import 'dotenv/config';
 import { taskSchema, userSchema } from './schemas';
-import z from 'zod';
-import path from 'node:path';
-
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
 });
@@ -16,7 +13,14 @@ app.use(express.json())
 const port = 3000
 app.post('/user', async(req, res) => {
 
-userSchema.parse(req.body)
+const result = userSchema.safeParse(req.body)
+if(!result.success){
+  return res.status(400).json({
+    message: "invalid data",
+  details: result.error.issues
+    
+  })
+}
 const user = await prisma.user.create({
   data: {email: req.body.email,
     password: req.body.password
@@ -43,23 +47,34 @@ app.get('/tasks/:id', async(req, res) => {
    res.json(task)
 })
 app.post('/tasks', async(req, res) => {
-  try{
+ 
+const result = taskSchema.safeParse(req.body)
+if(!result.success){
+  return res.status(400).json({
+    message: "invalid data",
+     details: result.error.issues
+  })
+}
 
-taskSchema.parse(req.body)
  const task = await prisma.task.create({
     data: req.body
   
   })
       res.json(task)
 
-  }catch(error){
-
-  }
+ 
  
 
 })
 app.put('/tasks/:id', async(req, res) => {
-  try{
+  
+  const result = taskSchema.safeParse(req.body)
+  if(!result.success){
+      return res.status(400).json({
+    message: "invalid data",
+     details: result.error.issues
+  })
+  }
    const taskId =  req.params.id;
     const task = await prisma.task.update({
     data: {title: req.body.title,
@@ -71,9 +86,6 @@ app.put('/tasks/:id', async(req, res) => {
  res.json(task)
 
 
-  }catch(error){
-
-  }
 
  
 })

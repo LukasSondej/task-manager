@@ -9,7 +9,9 @@ export const taskSchema = z.object({
 
     title: z.string().min(1),
     description: z.string(),
-    status: z.string()
+    status: z.string(),
+    userId: z.number().int("userId must be a total number ")
+
 })
 
 
