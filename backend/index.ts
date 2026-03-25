@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from './generated/prisma/client';
 import 'dotenv/config';
 import { taskSchema, userSchema } from './schemas';
+import jwt from 'jsonwebtoken';
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
 });
@@ -11,6 +12,8 @@ export const prisma = new PrismaClient({ adapter });
 const app = express()
 app.use(express.json())
 const port = 3000
+
+
 app.post('/user', async(req, res) => {
 
 const result = userSchema.safeParse(req.body)
@@ -26,7 +29,9 @@ const user = await prisma.user.create({
     password: req.body.password
   }
  })
-  res.json(user)
+ const payload = {userId: user.id}
+ var token = jwt.sign(payload, 'toJestTajneHasloMoje');
+  res.json({message:"udalo sie",user: user, token: token})
 
 
 
