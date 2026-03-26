@@ -4,6 +4,7 @@ import { PrismaClient } from './generated/prisma/client';
 import 'dotenv/config';
 import { taskSchema, userSchema } from './schemas';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
 });
@@ -24,9 +25,10 @@ if(!result.success){
     
   })
 }
+const hashedPassword = await bcrypt.hash(req.body.password, 10);
 const user = await prisma.user.create({
   data: {email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   }
  })
  const payload = {userId: user.id}
