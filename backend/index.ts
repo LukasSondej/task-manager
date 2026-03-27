@@ -6,7 +6,6 @@ import { taskSchema, userSchema } from './schemas';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-
 export interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -17,13 +16,13 @@ const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
 });
 
+const ACCESS_SECRET = process.env.ACCESS_SECRET as string;
+const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
+
 export const prisma = new PrismaClient({ adapter });
 const app = express()
 app.use(express.json())
 const port = 3000
-
-const JWT_SECRET = "kaljfdokdsjmvnafhj"
-
 
 app.post('/user', async(req, res) => {
   const result = userSchema.safeParse(req.body)
@@ -42,9 +41,7 @@ app.post('/user', async(req, res) => {
     data: { email: email, password: hashedPassword }
   })
   
-  const token = jwt.sign({ id: registeredUser.id }, JWT_SECRET)
-  
-  res.status(200).json({ user: registeredUser, token: token });
+  res.status(200).json({ user: registeredUser});
 })
 
 app.post('/login', async(req, res) => {
@@ -61,9 +58,32 @@ app.post('/login', async(req, res) => {
     if(!isPasswordValid){
       return res.status(401).json({ message: "Invalid password" }) 
     } else {
-      const token = jwt.sign({ id: user.id }, JWT_SECRET);
-      return res.status(200).json({ token: token })
+      const acces_token = jwt.sign({ id: user.id }, ACCESS_SECRET, {expiresIn: '15m'});
+      const refresh_token = jwt.sign({ id: user.id }, REFRESH_SECRET, {expiresIn: '15d'});
+      
+      const user_token_refresh = await prisma.user.update({
+        where: {id: user.id}, 
+        data: {refreshToken: refresh_token}
+      })
+      
+      return res.status(200).json({ acces_token: acces_token, refresh_token: refresh_token})
     }
+  }
+})
+
+app.post("/refresh", async(req, res) => {
+  try {
+    const decoded = jwt.verify(req.body.refresh_token, REFRESH_SECRET) as {id: number}
+    const user = await prisma.user.findUnique({where: {id: decoded.id}})
+    
+    if(req.body.refresh_token != user?.refreshToken){
+      return res.status(401).json({ message: "Invalid or revoked refresh token" })
+    } else {
+      const new_acces_token = jwt.sign({id: decoded.id}, ACCESS_SECRET, {expiresIn: "15m"})
+      return res.status(200).json({ acces_token: new_acces_token })
+    }
+  } catch(error) {
+    return res.status(401).json({ message: "Invalid or expired refresh token" })
   }
 })
 
@@ -73,11 +93,11 @@ const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) 
   } else {
     const token = req.headers['authorization'].split(" ")[1]
     try {
-      const decodedToken = jwt.verify(token, JWT_SECRET) as { id: number };
+      const decodedToken = jwt.verify(token, ACCESS_SECRET) as { id: number };
       req.user = decodedToken;
       next()
     } catch(error) {
-      return res.status(403).json({ message: "Invalid or expired token" }) 
+      return res.status(403).json({ message: "Invalid or expired access token" }) 
     }
   }
 }
