@@ -23,7 +23,20 @@ export const prisma = new PrismaClient({ adapter });
 const app = express()
 app.use(express.json())
 const port = 3000
-
+const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  if(!req.headers['authorization']){
+    return res.status(401).json({ message: "Missing authorization header" })
+  } else {
+    const token = req.headers['authorization'].split(" ")[1]
+    try {
+      const decodedToken = jwt.verify(token, ACCESS_SECRET) as { id: number };
+      req.user = decodedToken;
+      next()
+    } catch(error) {
+      return res.status(403).json({ message: "Invalid or expired access token" }) 
+    }
+  }
+}
 app.post('/user', async(req, res) => {
   const result = userSchema.safeParse(req.body)
   if(!result.success){
@@ -71,7 +84,7 @@ app.post('/login', async(req, res) => {
   }
 })
 
-app.post("/refresh", async(req, res) => {
+app.post("/refresh",async(req: AuthRequest, res) => {
   try {
     const decoded = jwt.verify(req.body.refresh_token, REFRESH_SECRET) as {id: number}
     const user = await prisma.user.findUnique({where: {id: decoded.id}})
@@ -87,40 +100,42 @@ app.post("/refresh", async(req, res) => {
   }
 })
 
-const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  if(!req.headers['authorization']){
-    return res.status(401).json({ message: "Missing authorization header" })
-  } else {
-    const token = req.headers['authorization'].split(" ")[1]
-    try {
-      const decodedToken = jwt.verify(token, ACCESS_SECRET) as { id: number };
-      req.user = decodedToken;
-      next()
-    } catch(error) {
-      return res.status(403).json({ message: "Invalid or expired access token" }) 
-    }
-  }
-}
 
-app.get('/user', verifyToken, async(req, res) => {
+app.post("/logout", verifyToken, async(req: AuthRequest, res: Response) => {
+  try {
+    if(req.user?.id) {
+      await prisma.user.update({
+        where: { id: req.user.id }, 
+        data: { refreshToken: null }
+      });
+      return res.status(200).json({ message: "Logout successful" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong during logout" });
+  }
+});
+
+app.get('/user', verifyToken, async(req: AuthRequest, res:Response) => {
   const users = await prisma.user.findMany()
   res.json(users)
 })
 
-app.get('/tasks', verifyToken, async(req, res) => {
-  const tasks = await prisma.task.findMany()
+app.get('/tasks', verifyToken, async(req: AuthRequest, res: Response) => {
+  const tasks = await prisma.task.findMany({where: {userId: req.user?.id}})
   res.json(tasks)
 })
 
-app.get('/tasks/:id', verifyToken, async(req, res) => {
+app.get('/tasks/:id', verifyToken, async(req: AuthRequest, res) => {
   const taskId = req.params.id;
-  const task = await prisma.task.findUnique({
-   where: { id: Number(taskId) }
+  const task = await prisma.task.findFirst({
+   where: { id: Number(taskId), userId: req.user?.id }
   })
   res.json(task)
 })
 
-app.post('/tasks', verifyToken, async(req, res) => {
+app.post('/tasks', verifyToken, async(req: AuthRequest, res: Response) => {
   const result = taskSchema.safeParse(req.body)
   if(!result.success){
     return res.status(400).json({
@@ -128,14 +143,22 @@ app.post('/tasks', verifyToken, async(req, res) => {
       details: result.error.issues
     })
   }
-
+if(!req.user?.id){
+  return res.status(403).json({message: "i cant"})
+}
   const task = await prisma.task.create({
-    data: req.body
+   data: {
+      title: req.body.title,
+      description: req.body.description,
+      status: req.body.status, 
+      userId: req.user!.id 
+    }
+    
   })
   res.json(task)
 })
 
-app.put('/tasks/:id', verifyToken, async(req, res) => {
+app.put('/tasks/:id', verifyToken, async(req: AuthRequest, res: Response) => {
   const result = taskSchema.safeParse(req.body)
   if(!result.success){
     return res.status(400).json({
@@ -145,21 +168,24 @@ app.put('/tasks/:id', verifyToken, async(req, res) => {
   }
   
   const taskId =  req.params.id;
-  const task = await prisma.task.update({
+  const task = await prisma.task.updateMany({
     data: {
       title: req.body.title,
       description: req.body.description,
       status: req.body.status
     },
-    where: { id: Number(taskId) }
+    where: { id: Number(taskId), userId: req.user?.id }
   })
   res.json(task)
 })
 
-app.delete('/tasks/:id', verifyToken, async (req, res) => {
+app.delete('/tasks/:id', verifyToken, async (req: AuthRequest, res: Response) => {
   const taskId =  req.params.id;
-  const deleteTask = await prisma.task.delete({
-    where: { id: Number(taskId) }
+  if(!req.user?.id){
+  return res.status(403).json({message: "i cant"})
+}
+  const deleteTask = await prisma.task.deleteMany({
+    where: { id: Number(taskId), userId: req.user.id }
   })
   res.send(deleteTask)
 })
