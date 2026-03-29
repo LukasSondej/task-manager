@@ -1,8 +1,27 @@
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
+import { LoginPage } from "./pages/LoginPage"
+import { TasksPage } from "./pages/TasksPage"
+
 function App() {
+  const router = createBrowserRouter([
+    {
+path: "/",
+element:  <Navigate to="/login" replace/>
+    },
+    {
+      path: "/login",
+      element: <LoginPage/>
+    },
+    {
+      path: "/tasks",
+      element: <TasksPage/>
+    },
+  ])
+
+  
   return (
-    <div className="bg-blue-600 text-white min-h-screen flex items-center justify-center text-5xl font-bold">
-      Tailwind działa! 🚀
-    </div>
+    
+    <RouterProvider router={router} />
   )
 }
 
