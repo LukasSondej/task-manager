@@ -1,8 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { LoginPage } from "./pages/LoginPage"
 import { TasksPage } from "./pages/TasksPage"
-
-function App() {
   const router = createBrowserRouter([
     {
 path: "/",
@@ -17,6 +15,8 @@ element:  <Navigate to="/login" replace/>
       element: <TasksPage/>
     },
   ])
+function App() {
+
 
   
   return (
