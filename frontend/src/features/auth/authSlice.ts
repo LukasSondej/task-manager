@@ -12,7 +12,7 @@ export const auth = createSlice({
     loginSuccess: (state, action) => {
       state.token = action.payload
       localStorage.setItem("accessToken", action.payload)
-      state.isAuthenticated = true
+      state.isAuthenticated = !!localStorage.getItem("accessToken")
     },
     logout: (state) => {
       state.token = null

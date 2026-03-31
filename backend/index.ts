@@ -5,7 +5,7 @@ import 'dotenv/config';
 import { taskSchema, userSchema } from './schemas';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-
+import cors from 'cors'
 export interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -21,6 +21,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
 
 export const prisma = new PrismaClient({ adapter });
 const app = express()
+app.use(cors())
 app.use(express.json())
 const port = 3000
 const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -71,7 +72,7 @@ app.post('/login', async(req, res) => {
     if(!isPasswordValid){
       return res.status(401).json({ message: "Invalid password" }) 
     } else {
-      const acces_token = jwt.sign({ id: user.id }, ACCESS_SECRET, {expiresIn: '15m'});
+      const access_token = jwt.sign({ id: user.id }, ACCESS_SECRET, {expiresIn: '15m'});
       const refresh_token = jwt.sign({ id: user.id }, REFRESH_SECRET, {expiresIn: '15d'});
       
       const user_token_refresh = await prisma.user.update({
@@ -79,7 +80,7 @@ app.post('/login', async(req, res) => {
         data: {refreshToken: refresh_token}
       })
       
-      return res.status(200).json({ acces_token: acces_token, refresh_token: refresh_token})
+      return res.status(200).json({ access_token: access_token, refresh_token: refresh_token})
     }
   }
 })
@@ -92,8 +93,8 @@ app.post("/refresh",async(req: AuthRequest, res) => {
     if(req.body.refresh_token != user?.refreshToken){
       return res.status(401).json({ message: "Invalid or revoked refresh token" })
     } else {
-      const new_acces_token = jwt.sign({id: decoded.id}, ACCESS_SECRET, {expiresIn: "15m"})
-      return res.status(200).json({ acces_token: new_acces_token })
+      const new_access_token = jwt.sign({id: decoded.id}, ACCESS_SECRET, {expiresIn: "15m"})
+      return res.status(200).json({ access_token: new_access_token })
     }
   } catch(error) {
     return res.status(401).json({ message: "Invalid or expired refresh token" })

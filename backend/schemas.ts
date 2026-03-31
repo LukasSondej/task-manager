@@ -8,8 +8,8 @@ password: z.string().min(7)
 export const taskSchema = z.object({
 
     title: z.string().min(1),
-    description: z.string(),
-    status: z.string(),
+    description: z.string().optional(),
+    status: z.string().default("TODO"),
 
 })
 

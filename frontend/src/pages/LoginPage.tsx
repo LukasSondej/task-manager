@@ -3,16 +3,23 @@ import { loginSchema, type loginSchemaType } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-
+import axiosInstance from "../api/axios"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { useNavigate } from "react-router-dom"
 
 
 export const LoginPage =() => {
+    const navigate = useNavigate()
    const {register, handleSubmit} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
-   const onSubmit =(data: loginSchemaType) => {
-    console.log(data)
+   const onSubmit =async(data: loginSchemaType) => {
+   try{
+const response = await axiosInstance.post("/login", data)
+localStorage.setItem("accessToken", response.data.access_token)
+navigate("/tasks")
+   }catch(error){
+    console.log(error)
+   }
    }
     return (
         <div className="flex justify-center min-h-screen items-center">
@@ -51,7 +58,7 @@ export const LoginPage =() => {
                   Forgot your password?
                 </a>
               </div>
-              <Input {...register("password")} />
+              <Input type="password" {...register("password")} />
             </div>
           </div>
            <Button type="submit" className="w-full mt-8">

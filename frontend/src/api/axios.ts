@@ -11,3 +11,5 @@ if(localStorage.getItem("accessToken")){
     return Promise.reject(error);
   },
 );
+
+export default instance
