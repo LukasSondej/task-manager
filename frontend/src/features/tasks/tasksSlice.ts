@@ -9,7 +9,7 @@ const fetchTasks = createAsyncThunk(
 )
 const addTask = createAsyncThunk(
   'tasks/addTask',
-  async(newTask: {title: string, description: string})=>{
+  async(newTask: { title: string; description?: string; status: string })=>{
 const response = await instanceAxios.post("/tasks", newTask)
 return response.data
   }
@@ -55,5 +55,6 @@ const tasksSlice = createSlice({
     })
   },
 })
-export { fetchTasks }; 
+export { fetchTasks };
+export {addTask} 
 export default tasksSlice.reducer;

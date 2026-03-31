@@ -13,5 +13,5 @@ export const taskSchema = z.object({
 
 })
 
-
+export type taskType = z.infer<typeof taskSchema>
 
