@@ -1,28 +1,58 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import  instanceAxios  from '../../api/axios'
+import type { loginSchemaType } from '@/schemas/loginSchema'
 
+const loginUser = createAsyncThunk(
+  'user/login',
+  async(data: loginSchemaType) => {
+    const response = await instanceAxios.post("/login", data)
+    localStorage.setItem("accessToken", response.data.accessToken)
+    localStorage.setItem("refreshToken", response.data.refreshToken)
+    return response.data
+  }
+
+)
 
 const initialState = {
     token: localStorage.getItem("accessToken"),
-    isAuthenticated: false
+    isAuthenticated: !!localStorage.getItem("accessToken"),
+    isLoading: false,
+isError: false
 }
 export const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSuccess: (state, action) => {
-      state.token = action.payload
-      localStorage.setItem("accessToken", action.payload)
-      state.isAuthenticated = !!localStorage.getItem("accessToken")
+   logout: (state) => {
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken")
+    state.isAuthenticated = false
+   }
     },
-    logout: (state) => {
-      state.token = null
+
+  extraReducers: (builder) => {
+    builder.addCase(loginUser.pending, (state, action) => {
+      state.isLoading = true
       state.isAuthenticated = false
-      localStorage.removeItem("accessToken")
-    },
- 
-  },
+
+    }),
+        builder.addCase(loginUser.fulfilled, (state, action) => {
+          state.token = action.payload.accessToken
+      state.isLoading = false
+      state.isAuthenticated = true
+
+    }),
+        builder.addCase(loginUser.rejected, (state, action) => {
+      state.isLoading = false
+      state.isAuthenticated = false
+
+    })
+
+  }
 })
 
-export const { loginSuccess, logout }= auth.actions
+export const { logout }= auth.actions
 
 export default auth.reducer
+export {loginUser}

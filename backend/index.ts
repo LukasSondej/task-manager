@@ -2,10 +2,11 @@ import express, { NextFunction, Request, Response } from 'express'
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from './generated/prisma/client';
 import 'dotenv/config';
-import { taskSchema, userSchema } from './schemas';
+import { taskSchema, userSchema, userType } from './schemas';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import cors from 'cors'
+
 export interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -21,9 +22,15 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
 
 export const prisma = new PrismaClient({ adapter });
 const app = express()
-app.use(cors())
+
+const corsOptions = {
+  origin: 'http://localhost:5173',
+ credentials: true
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 const port = 3000
+
 const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   if(!req.headers['authorization']){
     return res.status(401).json({ message: "Missing authorization header" })
@@ -38,6 +45,7 @@ const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) 
     }
   }
 }
+
 app.post('/user', async(req, res) => {
   const result = userSchema.safeParse(req.body)
   if(!result.success){
@@ -49,6 +57,12 @@ app.post('/user', async(req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
+
+  const existingUser = await prisma.user.findUnique({ where: { email: email } });
+  if (existingUser) {
+     return res.status(409).json({ message: "User with this email already exists" });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const registeredUser = await prisma.user.create({
@@ -72,29 +86,33 @@ app.post('/login', async(req, res) => {
     if(!isPasswordValid){
       return res.status(401).json({ message: "Invalid password" }) 
     } else {
-      const access_token = jwt.sign({ id: user.id }, ACCESS_SECRET, {expiresIn: '15m'});
-      const refresh_token = jwt.sign({ id: user.id }, REFRESH_SECRET, {expiresIn: '15d'});
+
+      const accessToken = jwt.sign({ id: user.id }, ACCESS_SECRET, {expiresIn: '15m'});
+      const refreshToken = jwt.sign({ id: user.id }, REFRESH_SECRET, {expiresIn: '15d'});
       
-      const user_token_refresh = await prisma.user.update({
+      await prisma.user.update({
         where: {id: user.id}, 
-        data: {refreshToken: refresh_token}
+        data: {refreshToken: refreshToken}
       })
       
-      return res.status(200).json({ access_token: access_token, refresh_token: refresh_token})
+
+      return res.status(200).json({ accessToken: accessToken, refreshToken: refreshToken})
     }
   }
 })
 
 app.post("/refresh",async(req: AuthRequest, res) => {
   try {
-    const decoded = jwt.verify(req.body.refresh_token, REFRESH_SECRET) as {id: number}
+    // Front musi teraz wysyłać jsona z { "refreshToken": "..." }
+    const decoded = jwt.verify(req.body.refreshToken, REFRESH_SECRET) as {id: number}
     const user = await prisma.user.findUnique({where: {id: decoded.id}})
     
-    if(req.body.refresh_token != user?.refreshToken){
+    if(req.body.refreshToken != user?.refreshToken){
       return res.status(401).json({ message: "Invalid or revoked refresh token" })
     } else {
-      const new_access_token = jwt.sign({id: decoded.id}, ACCESS_SECRET, {expiresIn: "15m"})
-      return res.status(200).json({ access_token: new_access_token })
+    
+      const newAccessToken = jwt.sign({id: decoded.id}, ACCESS_SECRET, {expiresIn: "15m"})
+      return res.status(200).json({ accessToken: newAccessToken })
     }
   } catch(error) {
     return res.status(401).json({ message: "Invalid or expired refresh token" })
@@ -118,9 +136,12 @@ app.post("/logout", verifyToken, async(req: AuthRequest, res: Response) => {
   }
 });
 
-app.get('/user', verifyToken, async(req: AuthRequest, res:Response) => {
-  const users = await prisma.user.findMany()
-  res.json(users)
+app.get('/auth/me', verifyToken, async(req: AuthRequest, res:Response) => {
+  const userId = req.user?.id
+  const user = await prisma.user.findUnique({where: {id: userId}, select: {
+    email: true
+  }})
+  res.json(user)
 })
 
 app.get('/tasks', verifyToken, async(req: AuthRequest, res: Response) => {
@@ -190,7 +211,15 @@ app.delete('/tasks/:id', verifyToken, async (req: AuthRequest, res: Response) =>
   })
   res.send(deleteTask)
 })
-
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ 
+    message: "Something went wrong on the server side!",
+    error: err.message
+  });
+});
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

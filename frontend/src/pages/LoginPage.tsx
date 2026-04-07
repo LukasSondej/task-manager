@@ -1,26 +1,31 @@
 import { useForm} from "react-hook-form"
 import { loginSchema, type loginSchemaType } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardAction, CardContent, CardDescription,CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import axiosInstance from "../api/axios"
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-
+import { loginUser } from "@/features/auth/authSlice"
+import { useDispatch } from "react-redux"
+import type { AppDispatch } from "@/app/store"
 
 export const LoginPage =() => {
     const navigate = useNavigate()
    const {register, handleSubmit} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
-   const onSubmit =async(data: loginSchemaType) => {
-   try{
-const response = await axiosInstance.post("/login", data)
-localStorage.setItem("accessToken", response.data.access_token)
+const dispatch = useDispatch<AppDispatch>()
+const onSubmit = async(data: loginSchemaType) => {
+  try{
+
+ await dispatch(loginUser(data)).unwrap()
 navigate("/tasks")
-   }catch(error){
-    console.log(error)
-   }
-   }
+  }catch(error){
+console.log(error)
+  }
+
+
+}
     return (
         <div className="flex justify-center min-h-screen items-center">
 

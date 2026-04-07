@@ -14,11 +14,30 @@ if(localStorage.getItem("accessToken")){
 instance.interceptors.response.use(function onFulfilled(response) {
 
     return response;
-  }, function onRejected(error) {
-if(error.response && error.response.status == 401 || error.response.status === 403){
+  },async function onRejected(error) {
+
+    const originalRequest = error.config
+if(error.response && (error.response.status == 401 || error.response.status === 403) && !originalRequest._retry){
+originalRequest._retry = true;
+try{
+const refreshToken = localStorage.getItem('refreshToken');
+if(!refreshToken){
   localStorage.removeItem("accessToken")
-  window.location.href ="/login"
+  localStorage.removeItem("refreshToken")
+window.location.href = "/login"
+}else{
+ const response = await axios.post("http://localhost:3000/refresh", {refreshToken: refreshToken})
+localStorage.setItem("accessToken", response.data.accessToken)
+originalRequest.headers.Authorization = "Bearer " + response.data.accessToken;
+return instance(originalRequest);
 }
+}catch(error){
+localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  window.location.href = "/login";
+}
+}
+
     return Promise.reject(error);
   });
 export default instance
