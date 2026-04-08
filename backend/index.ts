@@ -212,9 +212,11 @@ app.delete('/tasks/:id', verifyToken, async (req: AuthRequest, res: Response) =>
   res.send(deleteTask)
 })
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(err)
   if (res.headersSent) {
     return next(err);
   }
+
   res.status(500).json({ 
     message: "Something went wrong on the server side!",
     error: err.message
