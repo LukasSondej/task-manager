@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "@/app/store"
 import { TaskForm } from "@/components/TaskForm"
 import type { taskType } from "../../../backend/schemas"
+import { TaskCard } from "@/components/TaskCard"
 
 
 type Task = {
@@ -36,7 +37,10 @@ if(isError) return <p>Error</p>
 <div>Tasks!!! </div>
 <div><button onClick={()=>setIsFormOpen((prev) => !prev)}>Add task</button></div>
 {isFormOpen && <TaskForm onSubmit={onSubmit} onClose={() => setIsFormOpen(false)}/>}
-{items.map((task: Task) => (<div key={task.id}><h1>{task.title}</h1><p>{task.description}</p><h2>{task.status}</h2></div>))}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+        {items.map((task: Task) => <TaskCard key={task.id} task={task}/>)}
+    </div>
+
 <Link to={"/login"}>Login Page</Link>
     </div> )
 }
