@@ -3,7 +3,7 @@ import { omit } from "zod/mini";
 
 export const userSchema = z.object({
 email: z.string().min(3),
-password: z.string().min(7)
+password: z.string().min(5)
 })
 
 export const taskSchema = z.object({

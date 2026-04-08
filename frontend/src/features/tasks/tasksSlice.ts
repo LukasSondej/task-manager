@@ -14,6 +14,25 @@ const response = await instanceAxios.post("/tasks", newTask)
 return response.data
   }
 )
+const deleteTask = createAsyncThunk(
+  "tasks/deleteTask",
+  async(id: number) => {
+    await instanceAxios.delete('/tasks/' + id)
+    return id
+  }
+)
+type UpdateTaskType = {
+  title?: string; 
+  description?: string;
+  status?: string; 
+}
+const updateTask = createAsyncThunk(
+  "tasks/updateTask",
+  async(dataTask: { id: number, data: UpdateTaskType}) => {
+    await instanceAxios.put('/tasks/' + dataTask.id, dataTask.data)
+    return {id: dataTask.id, ...dataTask.data}
+  }
+)
 type Task = {
     id: number
     title: string,
@@ -53,8 +72,20 @@ const tasksSlice = createSlice({
     builder.addCase(addTask.fulfilled, (state, action) => {
         state.items.push(action.payload)
     })
+    builder.addCase(deleteTask.fulfilled, (state, action) => {
+       state.items = state.items.filter(task => task.id !== action.payload)
+    })
+    builder.addCase(updateTask.fulfilled, (state, action) => {
+    const index = state.items.findIndex(task => task.id == action.payload.id)
+    if(index !== -1){
+         state.items[index] = {...state.items[index], ...action.payload}
+    }
+ 
+    })
   },
 })
 export { fetchTasks };
 export {addTask} 
+export {deleteTask} 
+export {updateTask} 
 export default tasksSlice.reducer;

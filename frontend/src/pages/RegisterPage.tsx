@@ -1,33 +1,32 @@
 import { useForm} from "react-hook-form"
-import { loginSchema, type loginSchemaType } from "../schemas/loginSchema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardAction, CardContent, CardDescription,CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
-import { loginUser } from "@/features/auth/authSlice"
-import { useDispatch } from "react-redux"
-import type { AppDispatch } from "@/app/store"
+import instanceAxios from "../api/axios"
+import {type registerSchemaType, registerSchema } from "@/schemas/registerSchema"
 
-export const LoginPage =() => {
+
+export const RegisterPage =() => {
     const navigate = useNavigate()
-   const {register, handleSubmit} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
-const dispatch = useDispatch<AppDispatch>()
-const onSubmit = async(data: loginSchemaType) => {
+   const {register, handleSubmit} = useForm<registerSchemaType>({resolver: zodResolver(registerSchema),  defaultValues: {email: "", password: "", confirmPassword: ""}})
+const onSubmit = async(data: registerSchemaType) => {
   try{
-
- await dispatch(loginUser(data)).unwrap()
-navigate("/tasks")
+await instanceAxios.post("/user", {
+    email: data.email,
+    password: data.password
+})
+navigate("/login");
   }catch(error){
 console.log(error)
   }
 
 
 }
-const goToRegister = () => {
-  navigate("/register")
+const goToLoginPage = () => {
+  navigate("/login")
 }
     return (
         <div className="flex justify-center min-h-screen items-center">
@@ -36,12 +35,12 @@ const goToRegister = () => {
         <Card className="w-full max-w-sm">
 
 <CardHeader>
-    <CardTitle>Login to your account</CardTitle>
+    <CardTitle>Register</CardTitle>
      <CardDescription>
-          Enter your email below to login to your account
+     Enter your details below to create an account
         </CardDescription>
         <CardAction>
-          <Button variant="link" onClick={goToRegister}>Sign Up</Button>
+          <Button variant="link" onClick={goToLoginPage}>Log in</Button>
         </CardAction>
 </CardHeader>
 
@@ -59,18 +58,16 @@ const goToRegister = () => {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
               </div>
               <Input type="password" {...register("password")} />
+               <div className="flex items-center">
+                <Label htmlFor="password">Confirm Password</Label>
+              </div>
+               <Input type="password" {...register("confirmPassword")} />
             </div>
           </div>
            <Button type="submit" className="w-full mt-8">
-          Login
+          Register
         </Button>
         </form>
 </CardContent>

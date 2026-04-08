@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { LoginPage } from "./pages/LoginPage"
 import { TasksPage } from "./pages/TasksPage"
 import { ProtectedRoute } from "./components/ProtectedRoute"
+import { RegisterPage } from "./pages/RegisterPage"
   const router = createBrowserRouter([
     {
 path: "/",
@@ -14,6 +15,10 @@ element:  <Navigate to="/login" replace/>
     {
       path: "/tasks",
       element: (<ProtectedRoute><TasksPage/></ProtectedRoute>)
+    },
+    {
+      path: "/register",
+      element: <RegisterPage/>
     },
   ])
 function App() {
