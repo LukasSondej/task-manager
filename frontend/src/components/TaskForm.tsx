@@ -1,6 +1,11 @@
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import {taskSchema, type taskType} from "../../../backend/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Label } from "./ui/label"
+import { Input } from "./ui/input"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { Button } from "./ui/button"
+
 
 
 type TaskFormData = {
@@ -10,22 +15,47 @@ type TaskFormData = {
 }
 export const TaskForm =({defaultData, onSubmit, onClose}: TaskFormData)=> {
 
-    const {register, handleSubmit} = useForm<taskType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
+    const {register, handleSubmit, control} = useForm<taskType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
 
 return(
-    <form onSubmit={handleSubmit(onSubmit)}>
-<label htmlFor="title">Title</label>
-<input {...register("title")}/>
-<label htmlFor="description">Description</label>
-<input {...register("description")}/>
-<label htmlFor="description">Status</label>
-<select id="status" {...register("status")}>
-                <option value="TODO">To DO</option>
-                <option value="doing">Doing</option>
-                <option value="done">Done</option>
-            </select>
-<button type="submit">Submit</button>
-<button type="button" onClick={onClose}>Cancel</button>
-    </form>
-)
-}
+  <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white mb-8">
+        <div className="flex flex-col gap-4">
+
+<Label htmlFor="title">Title</Label>
+<Input {...register("title")}/>
+<Label htmlFor="description">Description</Label>
+<Input {...register("description")}/>
+<Label htmlFor="description">Status</Label>
+
+<Controller name="status" control={control} render={({field}) => (
+<Select onValueChange={field.onChange} defaultValue={field.value}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select status" />
+    </SelectTrigger>
+    <SelectContent>
+<SelectGroup>
+
+     <SelectItem value="TODO">To Do</SelectItem>
+<SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+<SelectItem value="DONE">Done</SelectItem>
+</SelectGroup>
+
+
+    </SelectContent>
+              
+            </Select>
+)}/>
+
+
+<Button type="submit">Submit</Button>
+<Button type="button" onClick={onClose}>Cancel</Button>
+
+        </div>
+
+    </form>)}
+
+
+  
+    
+
+
