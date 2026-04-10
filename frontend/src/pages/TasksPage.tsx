@@ -6,6 +6,7 @@ import type { AppDispatch, RootState } from "@/app/store"
 import { TaskForm } from "@/components/TaskForm"
 import type { taskType } from "../../../backend/schemas"
 import { TaskCard } from "@/components/TaskCard"
+import { NavBar } from "@/components/NavBar"
 
 
 type Task = {
@@ -34,6 +35,7 @@ if(isLoading) return <p>Loading...</p>
 if(isError) return <p>Error</p>
 
     return (<div>
+        <NavBar/>
 <div>Tasks!!! </div>
 <div><button onClick={()=>setIsFormOpen((prev) => !prev)}>Add task</button></div>
 {isFormOpen && <TaskForm onSubmit={onSubmit} onClose={() => setIsFormOpen(false)}/>}
