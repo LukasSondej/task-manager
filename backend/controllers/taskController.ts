@@ -3,7 +3,7 @@ import { AuthRequest } from "../middlewares/authMiddleware"
 import {Response} from 'express'
 import { taskSchema } from "../schemas"
  export const getTasks = async(req: AuthRequest, res: Response) => {
-  const tasks = await prisma.task.findMany({where: {userId: req.user?.id}})
+  const tasks = await prisma.task.findMany({where: {userId: req.user?.id}, orderBy: {id: 'desc'}})
  res.json(tasks)
 }
 

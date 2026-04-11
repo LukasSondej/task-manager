@@ -70,7 +70,7 @@ const tasksSlice = createSlice({
       state.isLoading = false
     })
     builder.addCase(addTask.fulfilled, (state, action) => {
-        state.items.push(action.payload)
+        state.items.unshift(action.payload)
     })
     builder.addCase(deleteTask.fulfilled, (state, action) => {
        state.items = state.items.filter(task => task.id !== action.payload)
