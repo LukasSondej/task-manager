@@ -1,19 +1,17 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
+import { Card, CardContent,CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button" 
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/app/store";
-import { deleteTask, updateTask } from "@/features/tasks/tasksSlice";
+import {deleteTask, updateTask } from "@/features/tasks/tasksSlice";
+import type { Task } from "@/types";
 
 type PropsTaskCard = {
-    task: {
-        id: number; 
-        title: string;
-        description?: string; 
-        status: string;
-    }
+    task: Task
+    onEditClick: (task: Task) => void
 }
 
-export const TaskCard = ({ task }: PropsTaskCard) => {
+export const TaskCard = ({ task, onEditClick }: PropsTaskCard) => {
+
     const colorsTailwind = (status: string) => {
             if(status == "TODO"){ return "bg-slate-100 text-slate-700"}
               if(status == "IN_PROGRESS"){return "bg-blue-100 text-blue-700"}
@@ -46,8 +44,10 @@ const handleStatusChange = (id: number, status: string) => {
             }))
         }
     }
-    return (
-        <Card>
+  
+
+   
+ return  (<Card>
             <CardHeader>
                 <CardTitle>{task.title}</CardTitle>
                 <span className={`${colorsTailwind(task.status)} inline-block rounded-full px-2 py-1 text-xs`}>Status: {task.status}</span> 
@@ -58,10 +58,20 @@ const handleStatusChange = (id: number, status: string) => {
             </CardContent>
 
             <CardFooter className="flex justify-between"> 
-                <Button variant="destructive" onClick={()=> handleDelete(task.id)}>Delete</Button>
+                <div>
+                           <Button variant="destructive" onClick={()=> handleDelete(task.id)}>Delete</Button>
+                <Button onClick={() => onEditClick(task)}>EDIT</Button>  
+                </div>
+       
                {task.status == "TODO" && <Button variant="outline" onClick={()=>handleStatusChange(task.id, task.status)}>IN_PROGRESS</Button>}
                {task.status === "IN_PROGRESS" && <Button variant="outline" onClick={()=>handleStatusChange(task.id, task.status)}>DONE</Button>}
             </CardFooter>
         </Card>
-    )
+ )
+
+
+   
+      
+      
+    
 }
