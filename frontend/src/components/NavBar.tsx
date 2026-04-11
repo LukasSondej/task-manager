@@ -12,7 +12,7 @@ export const NavBar = () => {
     navigate("/login")
     }
     return (
-      <nav className="flex justify-between items-center bg-gray-50 p-4 border-b">
+   <nav className="flex justify-between items-center bg-gray-50 p-4 border-b">
     <h1 className="text-xl font-bold">Task Manager</h1>
     <Button onClick={handleLogOut}>Log out</Button>
 </nav>

@@ -18,7 +18,7 @@ export const TaskForm =({defaultData, onSubmit, onClose}: TaskFormData)=> {
     const {register, handleSubmit, control} = useForm<taskType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
 
 return(
-  <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white mb-8">
+ <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white mb-8 fixed">
         <div className="flex flex-col gap-4">
 
 <Label htmlFor="title">Title</Label>

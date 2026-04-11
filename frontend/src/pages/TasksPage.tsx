@@ -1,5 +1,4 @@
 import { useEffect, useState} from "react"
-import { Link } from "react-router-dom"
 import { fetchTasks, addTask, updateTask} from "@/features/tasks/tasksSlice"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "@/app/store"
@@ -43,7 +42,7 @@ if(isLoading) return <p>Loading...</p>
 if(isError) return <p>Error</p>
 
 const filteredTasks = items.filter(task => filter === "ALL" || task.status === filter)
-    return (<div>
+    return (<div >
         <NavBar/>
 <div>Tasks!!! </div>
 <div><button onClick={()=>setIsFormOpen((prev) => !prev)}>Add task</button></div>

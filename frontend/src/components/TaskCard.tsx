@@ -49,12 +49,12 @@ const handleStatusChange = (id: number, status: string) => {
    
  return  (<Card>
             <CardHeader>
-                <CardTitle>{task.title}</CardTitle>
+            <CardTitle className="text-lg font-bold text-slate-900">{task.title}</CardTitle>
                 <span className={`${colorsTailwind(task.status)} inline-block rounded-full px-2 py-1 text-xs`}>Status: {task.status}</span> 
             </CardHeader>
 
             <CardContent>
-                <p>{task.description}</p>
+       <p className="text-sm text-slate-700 mt-2">{task.description}</p>
             </CardContent>
 
             <CardFooter className="flex justify-between"> 
