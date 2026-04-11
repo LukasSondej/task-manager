@@ -42,7 +42,7 @@ if(isLoading) return <p>Loading...</p>
 if(isError) return <p>Error</p>
 
 const filteredTasks = items.filter(task => filter === "ALL" || task.status === filter)
-    return (<div >
+    return (<div className="min-h-screen bg-slate-50 text-slate-900">
         <NavBar/>
 <div>Tasks!!! </div>
 <div><button onClick={()=>setIsFormOpen((prev) => !prev)}>Add task</button></div>
@@ -55,12 +55,10 @@ const filteredTasks = items.filter(task => filter === "ALL" || task.status === f
         {filteredTasks.map((task: Task) => <TaskCard onEditClick={setEditingTask}  key={task.id} task={task}/>)}
     </div>
 
-{
-    editingTask && (
-        <div className="bg-black/40 backdrop-blur-sm fixed inset-0 z-50 flex justify-center items-center">
-            <TaskForm onClose={() => setEditingTask(null)} defaultData={editingTask} onSubmit={onSubmitEdit}/>
-        </div> 
-    )
-}
+{editingTask && (
+    <div className="fixed inset-0 z-50 flex justify-center items-center bg-slate-900/40 p-4">
+        <TaskForm onClose={() => setEditingTask(null)} defaultData={editingTask} onSubmit={onSubmitEdit} />
+    </div>
+)}
     </div> )
 }

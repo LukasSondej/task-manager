@@ -12,12 +12,11 @@ type PropsTaskCard = {
 
 export const TaskCard = ({ task, onEditClick }: PropsTaskCard) => {
 
-    const colorsTailwind = (status: string) => {
-            if(status == "TODO"){ return "bg-slate-100 text-slate-700"}
-              if(status == "IN_PROGRESS"){return "bg-blue-100 text-blue-700"}
-              if(status == "DONE"){return "bg-green-100 text-green-700"}
-
-    }
+const colorsTailwind = (status: string) => {
+    if(status === "TODO") return "bg-slate-200 text-slate-800 font-semibold"
+    if(status === "IN_PROGRESS") return "bg-blue-100 text-blue-800 font-semibold"
+    if(status === "DONE") return "bg-emerald-100 text-emerald-800 font-semibold"
+}
     const dispatch = useDispatch<AppDispatch>()
     const handleDelete = (id: number) => {
         dispatch(deleteTask(id))
@@ -47,7 +46,7 @@ const handleStatusChange = (id: number, status: string) => {
   
 
    
- return  (<Card>
+ return  (<Card className="bg-white border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 rounded-xl flex flex-col h-full">
             <CardHeader>
             <CardTitle className="text-lg font-bold text-slate-900">{task.title}</CardTitle>
                 <span className={`${colorsTailwind(task.status)} inline-block rounded-full px-2 py-1 text-xs`}>Status: {task.status}</span> 
@@ -57,15 +56,24 @@ const handleStatusChange = (id: number, status: string) => {
        <p className="text-sm text-slate-700 mt-2">{task.description}</p>
             </CardContent>
 
-            <CardFooter className="flex justify-between"> 
-                <div>
-                           <Button variant="destructive" onClick={()=> handleDelete(task.id)}>Delete</Button>
-                <Button onClick={() => onEditClick(task)}>EDIT</Button>  
-                </div>
-       
-               {task.status == "TODO" && <Button variant="outline" onClick={()=>handleStatusChange(task.id, task.status)}>IN_PROGRESS</Button>}
-               {task.status === "IN_PROGRESS" && <Button variant="outline" onClick={()=>handleStatusChange(task.id, task.status)}>DONE</Button>}
-            </CardFooter>
+<CardFooter className="flex justify-between items-center gap-2 mt-auto pt-4 border-t border-slate-100"> 
+    <div className="flex gap-2">
+        <Button variant="destructive" size="sm" onClick={()=> handleDelete(task.id)}>Delete</Button>
+        <Button variant="outline" size="sm" onClick={() => onEditClick(task)}>EDIT</Button>  
+    </div>
+    <div className="flex gap-2">
+    {task.status === "TODO" && (
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
+            Start
+        </Button>
+    )}
+    {task.status === "IN_PROGRESS" && (
+        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
+            Finish
+        </Button>
+    )}
+</div>
+</CardFooter>
         </Card>
  )
 

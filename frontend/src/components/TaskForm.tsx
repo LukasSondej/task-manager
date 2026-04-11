@@ -18,7 +18,7 @@ export const TaskForm =({defaultData, onSubmit, onClose}: TaskFormData)=> {
     const {register, handleSubmit, control} = useForm<taskType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
 
 return(
- <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto p-6 border rounded-lg shadow-sm bg-white mb-8 fixed">
+ <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg mx-auto p-8 border border-slate-200 rounded-2xl shadow-xl bg-slate-50 mb-8">
         <div className="flex flex-col gap-4">
 
 <Label htmlFor="title">Title</Label>
@@ -47,9 +47,21 @@ return(
 )}/>
 
 
-<Button type="submit">Submit</Button>
-<Button type="button" onClick={onClose}>Cancel</Button>
-
+<div className="flex justify-end gap-3 mt-6">
+    <Button 
+        type="button" 
+        className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200" 
+        onClick={onClose}
+    >
+        Cancel
+    </Button>
+    <Button 
+        type="submit" 
+        className="bg-slate-900 hover:bg-slate-800 text-white"
+    >
+        Submit
+    </Button>
+</div>
         </div>
 
     </form>)}
