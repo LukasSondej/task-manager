@@ -11,7 +11,8 @@ import {type registerSchemaType, registerSchema } from "@/schemas/registerSchema
 
 export const RegisterPage =() => {
     const navigate = useNavigate()
-   const {register, handleSubmit} = useForm<registerSchemaType>({resolver: zodResolver(registerSchema),  defaultValues: {email: "", password: "", confirmPassword: ""}})
+   const {register, handleSubmit, formState} = useForm<registerSchemaType>({resolver: zodResolver(registerSchema),  defaultValues: {email: "", password: "", confirmPassword: ""}})
+   const {errors } = formState
 const onSubmit = async(data: registerSchemaType) => {
   try{
 await instanceAxios.post("/user", {
@@ -54,16 +55,19 @@ const goToLoginPage = () => {
               <Input
               {...register("email")}
               />
+              {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
               </div>
               <Input type="password" {...register("password")} />
+              {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
                <div className="flex items-center">
                 <Label htmlFor="password">Confirm Password</Label>
               </div>
                <Input type="password" {...register("confirmPassword")} />
+                             {errors.confirmPassword && <span className="text-sm text-red-500">{errors.confirmPassword.message}</span>}
             </div>
           </div>
            <Button type="submit" className="w-full mt-8">

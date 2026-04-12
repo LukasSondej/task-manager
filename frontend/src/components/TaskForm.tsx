@@ -1,28 +1,27 @@
 import { Controller, useForm } from "react-hook-form"
-import {taskSchema, type taskType} from "../../../backend/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Button } from "./ui/button"
-
-
+import { taskSchema, type taskSchemaType } from "@/schemas/taskSchema"
 
 type TaskFormData = {
-    onSubmit: (data: taskType)=> void
-    defaultData?: taskType
+    onSubmit: (data: taskSchemaType)=> void
+    defaultData?: taskSchemaType
     onClose: () => void
 }
 export const TaskForm =({defaultData, onSubmit, onClose}: TaskFormData)=> {
 
-    const {register, handleSubmit, control} = useForm<taskType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
-
+    const {register, handleSubmit, control, formState} = useForm<taskSchemaType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
+const {errors} = formState
 return(
  <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg mx-auto p-8 border border-slate-200 rounded-2xl shadow-xl bg-slate-50 mb-8">
         <div className="flex flex-col gap-4">
 
 <Label htmlFor="title">Title</Label>
 <Input {...register("title")}/>
+{errors.title && <span className="text-sm text-red-500">{errors.title.message}</span>}
 <Label htmlFor="description">Description</Label>
 <Input {...register("description")}/>
 <Label htmlFor="description">Status</Label>

@@ -13,7 +13,9 @@ import type { AppDispatch } from "@/app/store"
 
 export const LoginPage =() => {
     const navigate = useNavigate()
-   const {register, handleSubmit} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
+   const {register, handleSubmit, formState} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
+   const {errors} = formState
+   
 const dispatch = useDispatch<AppDispatch>()
 const onSubmit = async(data: loginSchemaType) => {
   try{
@@ -55,12 +57,14 @@ const goToRegister = () => {
               <Input
               {...register("email")}
               />
+              {errors.email && <span className="text-sm text-red-500">{errors.email.message}</span>}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
               </div>
               <Input type="password" {...register("password")} />
+                   {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
             </div>
           </div>
            <Button type="submit" className="w-full mt-8">
