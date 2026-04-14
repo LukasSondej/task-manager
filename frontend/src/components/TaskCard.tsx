@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog"
-import { Trash2Icon } from "lucide-react";
+import {Trash2Icon } from "lucide-react";
 type PropsTaskCard = {
     task: Task
     onEditClick: (task: Task) => void
@@ -87,7 +87,7 @@ toast.success("Task is now In Progress!");
     <div className="flex gap-2">
         <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete</Button>
+        <Button variant="destructive" size="sm">Delete</Button>
       </AlertDialogTrigger>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
@@ -105,18 +105,25 @@ toast.success("Task is now In Progress!");
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-        <Button variant="outline" size="sm" onClick={() => onEditClick(task)}>EDIT</Button>  
+<Button variant="outline" size="sm" onClick={() => onEditClick(task)}>
+    
+    Edit
+</Button>
     </div>
     <div className="flex gap-2">
     {task.status === "TODO" && (
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
-            Start
-        </Button>
+<Button 
+    className="bg-slate-600 hover:bg-slate-700 text-white shadow-sm" 
+    size="sm" 
+    onClick={()=>handleStatusChange(task.id, task.status)}
+>
+    Start Task
+</Button>
     )}
     {task.status === "IN_PROGRESS" && (
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
-            Finish
-        </Button>
+<Button className="bg-emerald-600 hover:bg-emerald-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
+                Finish
+            </Button>
     )}
 </div>
 </CardFooter>

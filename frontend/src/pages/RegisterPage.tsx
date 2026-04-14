@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import instanceAxios from "../api/axios"
 import {type registerSchemaType, registerSchema } from "@/schemas/registerSchema"
 import { toast } from "sonner"
+import { UserPlus } from "lucide-react"
 
 
 export const RegisterPage =() => {
@@ -75,9 +76,10 @@ const goToLoginPage = () => {
                              {errors.confirmPassword && <span className="text-sm text-red-500">{errors.confirmPassword.message}</span>}
             </div>
           </div>
-           <Button type="submit" className="w-full mt-8">
-          Register
-        </Button>
+      <Button type="submit" className="w-full mt-8">
+    <UserPlus className="w-4 h-4 mr-2" />
+    Register
+</Button>
         </form>
 </CardContent>
 

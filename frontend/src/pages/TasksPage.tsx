@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import type { Task } from "@/types"
 import { toast } from "sonner"
 import type { taskSchemaType } from "@/schemas/taskSchema"
+import { PlusCircle, X } from "lucide-react"
 
 
 export const TasksPage = () => {
@@ -74,15 +75,19 @@ const defaultTaskData = editingTask ? {
               <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
     <h1 className="text-3xl font-bold text-slate-900">My Tasks</h1>
     
-    <Button 
-        onClick={() => setIsFormOpen((prev) => !prev)}
-        className={isFormOpen 
-            ? "bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-6 text-lg rounded-xl transition-all"
-            : "bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-6 text-lg font-bold shadow-md rounded-xl transition-all hover:scale-105"
-        }
-    >
-        {isFormOpen ? "✕ Cancel" : "+ Add Task"}
-    </Button>
+<Button 
+    onClick={() => setIsFormOpen((prev) => !prev)}
+    className={isFormOpen 
+        ? "bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-6 text-lg rounded-xl transition-all"
+        : "bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-6 text-lg font-bold shadow-md rounded-xl transition-all hover:scale-105"
+    }
+>
+    {isFormOpen ? (
+        <><X className="w-5 h-5 mr-2" /> Cancel</>
+    ) : (
+        <><PlusCircle className="w-5 h-5 mr-2" /> Add Task</>
+    )}
+</Button>
 </div>
 
                 {isFormOpen && (

@@ -11,6 +11,7 @@ import { loginUser } from "@/features/auth/authSlice"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/store"
 import { toast } from "sonner"
+import { LogIn } from "lucide-react"
 
 export const LoginPage =() => {
     const navigate = useNavigate()
@@ -74,9 +75,10 @@ const goToRegister = () => {
                    {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
             </div>
           </div>
-           <Button type="submit" className="w-full mt-8">
-          Login
-        </Button>
+    <Button type="submit" className="w-full mt-8">
+    <LogIn className="w-4 h-4 mr-2" />
+    Login
+</Button>
         </form>
 </CardContent>
 

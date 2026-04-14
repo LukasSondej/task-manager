@@ -49,7 +49,7 @@ return(
 <div className="flex justify-end gap-3 mt-6">
     <Button 
         type="button" 
-        className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200" 
+        variant="outline"
         onClick={onClose}
     >
         Cancel
@@ -58,7 +58,7 @@ return(
         type="submit" 
         className="bg-slate-900 hover:bg-slate-800 text-white"
     >
-        Submit
+        Save Task
     </Button>
 </div>
         </div>
