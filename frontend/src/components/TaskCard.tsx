@@ -5,7 +5,19 @@ import type { AppDispatch } from "@/app/store";
 import {deleteTask, updateTask } from "@/features/tasks/tasksSlice";
 import type { Task } from "@/types";
 import { toast } from "sonner";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/ui/alert-dialog"
+import { Trash2Icon } from "lucide-react";
 type PropsTaskCard = {
     task: Task
     onEditClick: (task: Task) => void
@@ -73,7 +85,26 @@ toast.success("Task is now In Progress!");
 
 <CardFooter className="flex justify-between items-center gap-2 mt-auto pt-4 border-t border-slate-100"> 
     <div className="flex gap-2">
-        <Button variant="destructive" size="sm" onClick={()=> handleDelete(task.id)}>Delete</Button>
+        <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive">Delete</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+            <Trash2Icon />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Delete Task?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently delete this task.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={() => handleDelete(task.id)}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
         <Button variant="outline" size="sm" onClick={() => onEditClick(task)}>EDIT</Button>  
     </div>
     <div className="flex gap-2">
