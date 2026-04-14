@@ -5,7 +5,7 @@ import { Input } from "./ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Button } from "./ui/button"
 import { taskSchema, type taskSchemaType } from "@/schemas/taskSchema"
-
+import { Loader2 } from "lucide-react";
 type TaskFormData = {
     onSubmit: (data: taskSchemaType)=> void
     defaultData?: taskSchemaType
@@ -14,7 +14,7 @@ type TaskFormData = {
 export const TaskForm =({defaultData, onSubmit, onClose}: TaskFormData)=> {
 
     const {register, handleSubmit, control, formState} = useForm<taskSchemaType>({resolver: zodResolver(taskSchema),defaultValues: defaultData})
-const {errors} = formState
+const {errors, isSubmitting} = formState
 return(
  <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg mx-auto p-8 border border-slate-200 rounded-2xl shadow-xl bg-slate-50 mb-8">
         <div className="flex flex-col gap-4">
@@ -51,14 +51,20 @@ return(
         type="button" 
         variant="outline"
         onClick={onClose}
+        disabled={isSubmitting}
     >
         Cancel
     </Button>
     <Button 
         type="submit" 
-        className="bg-slate-900 hover:bg-slate-800 text-white"
-    >
-        Save Task
+        className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm"
+    >{isSubmitting ? (<>
+    <Loader2 className="w-4 h-4 mr-2 animate-spin"/>
+    Saving...
+    
+    </>):("Save Task")}
+        
+        
     </Button>
 </div>
         </div>

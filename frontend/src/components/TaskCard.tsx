@@ -17,7 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog"
-import {Trash2Icon } from "lucide-react";
+import {Loader2, Trash2Icon } from "lucide-react";
+import { useState } from "react";
 type PropsTaskCard = {
     task: Task
     onEditClick: (task: Task) => void
@@ -31,17 +32,21 @@ const colorsTailwind = (status: string) => {
     if(status === "DONE") return "bg-emerald-100 text-emerald-800 font-semibold"
 }
     const dispatch = useDispatch<AppDispatch>()
+    const [isLoading, setIsLoading] = useState(false);
     const handleDelete = async(id: number) => {
         try{
+            setIsLoading(true);
    await dispatch(deleteTask(id)).unwrap()
         toast.info("Task has been deleted.");
         }catch(error){
 toast.error("Failed to delete task.");
+setIsLoading(false);
         }
     
     }
 const handleStatusChange = async(id: number, status: string) => {
 try{
+    setIsLoading(true);
         if(status == "TODO"){
            await dispatch(updateTask({
                 id: id, 
@@ -67,6 +72,8 @@ toast.success("Task is now In Progress!");
 
 }catch(error){
     toast.error("Failed to change status.");
+}finally {
+    setIsLoading(false);
 }
 
     }
@@ -101,29 +108,28 @@ toast.success("Task is now In Progress!");
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={() => handleDelete(task.id)}>Delete</AlertDialogAction>
+    <AlertDialogAction disabled={isLoading} variant="destructive" onClick={() => handleDelete(task.id)}>
+    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-<Button variant="outline" size="sm" onClick={() => onEditClick(task)}>
-    
+<Button disabled={isLoading} variant="outline" size="sm" onClick={() => onEditClick(task)}>
     Edit
 </Button>
     </div>
     <div className="flex gap-2">
     {task.status === "TODO" && (
-<Button 
-    className="bg-slate-600 hover:bg-slate-700 text-white shadow-sm" 
-    size="sm" 
-    onClick={()=>handleStatusChange(task.id, task.status)}
->
-    Start Task
-</Button>
+<Button disabled={isLoading} className="bg-slate-600 hover:bg-slate-700 text-white shadow-sm" size="sm" onClick={() => handleStatusChange(task.id, task.status)}>
+        {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+        Start Task
+    </Button>
     )}
     {task.status === "IN_PROGRESS" && (
-<Button className="bg-emerald-600 hover:bg-emerald-700 text-white" size="sm" onClick={()=>handleStatusChange(task.id, task.status)}>
-                Finish
-            </Button>
+<Button disabled={isLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" size="sm" onClick={() => handleStatusChange(task.id, task.status)}>
+        {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+        Finish
+    </Button>
     )}
 </div>
 </CardFooter>

@@ -11,12 +11,12 @@ import { loginUser } from "@/features/auth/authSlice"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/store"
 import { toast } from "sonner"
-import { LogIn } from "lucide-react"
+import { Loader2, LogIn } from "lucide-react"
 
 export const LoginPage =() => {
     const navigate = useNavigate()
    const {register, handleSubmit, formState} = useForm<loginSchemaType>({resolver: zodResolver(loginSchema),  defaultValues: {email: "", password: ""}})
-   const {errors} = formState
+   const {errors, isSubmitting} = formState
    
 const dispatch = useDispatch<AppDispatch>()
 const onSubmit = async(data: loginSchemaType) => {
@@ -75,9 +75,20 @@ const goToRegister = () => {
                    {errors.password && <span className="text-sm text-red-500">{errors.password.message}</span>}
             </div>
           </div>
-    <Button type="submit" className="w-full mt-8">
-    <LogIn className="w-4 h-4 mr-2" />
-    Login
+    <Button type="submit" className="w-full mt-8" disabled={isSubmitting}>
+      {isSubmitting ? (
+        <>
+        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Logging in...
+        </>
+      ): (
+        <>
+                <LogIn className="w-4 h-4 mr-2" />
+    Login 
+        </>
+
+      )}
+   
 </Button>
         </form>
 </CardContent>
