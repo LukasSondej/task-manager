@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/app/store";
 import {deleteTask, updateTask } from "@/features/tasks/tasksSlice";
 import type { Task } from "@/types";
+import { toast } from "sonner";
 
 type PropsTaskCard = {
     task: Task
@@ -18,30 +19,44 @@ const colorsTailwind = (status: string) => {
     if(status === "DONE") return "bg-emerald-100 text-emerald-800 font-semibold"
 }
     const dispatch = useDispatch<AppDispatch>()
-    const handleDelete = (id: number) => {
-        dispatch(deleteTask(id))
+    const handleDelete = async(id: number) => {
+        try{
+   await dispatch(deleteTask(id)).unwrap()
+        toast.info("Task has been deleted.");
+        }catch(error){
+toast.error("Failed to delete task.");
+        }
+    
     }
-const handleStatusChange = (id: number, status: string) => {
+const handleStatusChange = async(id: number, status: string) => {
+try{
         if(status == "TODO"){
-            dispatch(updateTask({
+           await dispatch(updateTask({
                 id: id, 
                 data: {
                     title: task.title,             
                     description: task.description,
                     status: "IN_PROGRESS"         
                 }
-            }))
+            })).unwrap()
+toast.success("Task is now In Progress!");
         }
         if(status == "IN_PROGRESS"){
-            dispatch(updateTask({
+           await dispatch(updateTask({
                 id: id, 
                 data: {
                     title: task.title,             
                     description: task.description,
                     status: "DONE"              
                 }
-            }))
+            })).unwrap()
+            toast.success("Task completed! Great job!");
         }
+
+}catch(error){
+    toast.error("Failed to change status.");
+}
+
     }
   
 

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom"
 import { loginUser } from "@/features/auth/authSlice"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/store"
+import { toast } from "sonner"
 
 export const LoginPage =() => {
     const navigate = useNavigate()
@@ -21,8 +22,14 @@ const onSubmit = async(data: loginSchemaType) => {
   try{
 
  await dispatch(loginUser(data)).unwrap()
+ toast.success("Login successful!", {
+  description: "Welcome back to your Task Manager.",
+ })
 navigate("/tasks")
   }catch(error){
+    toast.error("Login failed!", {
+      description: "Please check your email and password.",
+    })
 console.log(error)
   }
 

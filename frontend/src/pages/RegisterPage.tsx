@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router-dom"
 import instanceAxios from "../api/axios"
 import {type registerSchemaType, registerSchema } from "@/schemas/registerSchema"
+import { toast } from "sonner"
 
 
 export const RegisterPage =() => {
@@ -19,9 +20,13 @@ await instanceAxios.post("/user", {
     email: data.email,
     password: data.password
 })
+toast.success("Account has been created!.",{
+  description: "Log in to your account!."
+})
 navigate("/login");
   }catch(error){
-console.log(error)
+console.log(error);
+toast.error("Try again")
   }
 
 

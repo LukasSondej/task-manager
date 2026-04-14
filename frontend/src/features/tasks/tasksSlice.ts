@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import  instanceAxios  from '../../api/axios'
+import type { taskSchemaType } from '@/schemas/taskSchema'
+import type { Task } from '@/types'
 const fetchTasks = createAsyncThunk(
   'tasks/fetchAll',
   async () => {
@@ -9,7 +11,7 @@ const fetchTasks = createAsyncThunk(
 )
 const addTask = createAsyncThunk(
   'tasks/addTask',
-  async(newTask: { title: string; description?: string; status: string })=>{
+  async(newTask: taskSchemaType)=>{
 const response = await instanceAxios.post("/tasks", newTask)
 return response.data
   }
@@ -24,7 +26,7 @@ const deleteTask = createAsyncThunk(
 type UpdateTaskType = {
   title?: string; 
   description?: string;
-  status?: string; 
+  status?: "TODO" | "IN_PROGRESS" | "DONE"; 
 }
 const updateTask = createAsyncThunk(
   "tasks/updateTask",
@@ -33,12 +35,7 @@ const updateTask = createAsyncThunk(
     return {id: dataTask.id, ...dataTask.data}
   }
 )
-type Task = {
-    id: number
-    title: string,
-    description: string,
-    status: string
-}
+
 type TasksState = {
 items: Task[],
 isLoading: boolean,

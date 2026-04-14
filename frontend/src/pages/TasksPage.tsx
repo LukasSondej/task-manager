@@ -3,11 +3,13 @@ import { fetchTasks, addTask, updateTask } from "@/features/tasks/tasksSlice"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "@/app/store"
 import { TaskForm } from "@/components/TaskForm"
-import type { taskType } from "../../../backend/schemas"
 import { TaskCard } from "@/components/TaskCard"
 import { NavBar } from "@/components/NavBar"
 import { Button } from "@/components/ui/button"
 import type { Task } from "@/types"
+import { toast } from "sonner"
+import type { taskSchemaType } from "@/schemas/taskSchema"
+
 
 export const TasksPage = () => {
     const [filter, setFilter] = useState("ALL")
@@ -21,16 +23,33 @@ export const TasksPage = () => {
         dispatch(fetchTasks())
     }, [dispatch])
 
-    const onSubmitAdd = (data: taskType) => {
-        dispatch(addTask(data));
+    const onSubmitAdd = async (data: taskSchemaType) => {
+        try{
+
+        await dispatch(addTask(data)).unwrap();
+        toast.success("Task has been created successfully")
         setIsFormOpen(false);
+
+        }catch(error){
+        toast.error("An error occurred while adding the task.");
+        }
+
+        
     }
 
     const idEditTask = editingTask?.id
-    const onSubmitEdit = (data: taskType) => {
+    const onSubmitEdit = async(data: taskSchemaType) => {
         if (!idEditTask) return null
-        dispatch(updateTask({ id: idEditTask, data: data }));
+        try{
+ await dispatch(updateTask({ id: idEditTask, data: data })).unwrap();
+        toast.success("Task has been updated successfully")
+
         setEditingTask(null);
+
+        }catch(error){
+toast.error("An error occurred while editing.");
+        }
+       
     }
 
     const handleChangeStatusTasks = (status: string) => {
@@ -41,6 +60,11 @@ export const TasksPage = () => {
     if (isError) return <p>Error</p>
 
     const filteredTasks = items.filter(task => filter === "ALL" || task.status === filter)
+const defaultTaskData = editingTask ? {
+    title: editingTask.title,
+    description: editingTask.description,
+    status: editingTask.status as "TODO" | "IN_PROGRESS" | "DONE"
+} : undefined;
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -80,7 +104,7 @@ export const TasksPage = () => {
     </p>
 ) : (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTasks.map((task: Task) => (
+        {filteredTasks.map((task) => (
             <TaskCard onEditClick={setEditingTask} key={task.id} task={task} />
         ))}
     </div>
@@ -90,7 +114,7 @@ export const TasksPage = () => {
 
             {editingTask && (
                 <div className="fixed inset-0 z-50 flex justify-center items-center bg-slate-900/40 p-4">
-                    <TaskForm onClose={() => setEditingTask(null)} defaultData={editingTask} onSubmit={onSubmitEdit} />
+                    <TaskForm onClose={() => setEditingTask(null)} defaultData={defaultTaskData} onSubmit={onSubmitEdit} />
                 </div>
             )}
         </div>
