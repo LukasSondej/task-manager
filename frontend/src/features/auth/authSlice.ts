@@ -36,13 +36,13 @@ export const auth = createSlice({
       state.isLoading = true
       state.isAuthenticated = false
 
-    }),
+    })
         builder.addCase(loginUser.fulfilled, (state, action) => {
           state.token = action.payload.accessToken
       state.isLoading = false
       state.isAuthenticated = true
 
-    }),
+    })
         builder.addCase(loginUser.rejected, (state, action) => {
       state.isLoading = false
       state.isAuthenticated = false

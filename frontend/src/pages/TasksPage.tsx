@@ -96,7 +96,7 @@ const defaultTaskData = editingTask ? {
                     </div>
                 )}
 
-                <div className="flex gap-2 mb-8">
+                <div className="flex flex-wrap gap-2 mb-8">
                     <Button variant={filter === "ALL" ? "default" : "outline"} onClick={() => handleChangeStatusTasks("ALL")}>All</Button>
                     <Button variant={filter === "TODO" ? "default" : "outline"} onClick={() => handleChangeStatusTasks("TODO")}>To Do</Button>
                     <Button variant={filter === "IN_PROGRESS" ? "default" : "outline"} onClick={() => handleChangeStatusTasks("IN_PROGRESS")}>In Progress</Button>

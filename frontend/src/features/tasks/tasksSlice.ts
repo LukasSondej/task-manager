@@ -50,7 +50,10 @@ const tasksSlice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
-
+clearTasks: (state) => {
+            state.items = [];
+            state.isError = false;
+        }
     },
     extraReducers: (builder) => {
     builder.addCase(fetchTasks.fulfilled, (state, action) => {
@@ -81,6 +84,7 @@ const tasksSlice = createSlice({
     })
   },
 })
+export const {clearTasks} = tasksSlice.actions
 export { fetchTasks };
 export {addTask} 
 export {deleteTask} 

@@ -4,12 +4,14 @@ import type { AppDispatch } from "@/app/store"
 import { logout } from "@/features/auth/authSlice"
 import { useNavigate } from "react-router-dom"
 import { ListChecks, LogOut } from "lucide-react"
+import { clearTasks } from "@/features/tasks/tasksSlice"
 
 export const NavBar = () => {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
     const handleLogOut = () => {
         dispatch(logout())
+        dispatch(clearTasks())
     navigate("/login")
     }
     return (
