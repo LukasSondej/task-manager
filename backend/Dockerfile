@@ -26,8 +26,10 @@ RUN apt-get update -qq && \
 COPY package-lock.json package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
+# Copy Prisma schema
+COPY prisma ./prisma
+
 # Generate Prisma Client
-COPY prisma .
 RUN npx prisma generate
 
 # Copy application code

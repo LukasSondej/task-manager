@@ -5,7 +5,6 @@
   "main": "index.js",
   "license": "MIT",
  "scripts": {
-  "postinstall": "prisma generate",
   "start": "npx tsx index.ts"
 },
   "devDependencies": {
