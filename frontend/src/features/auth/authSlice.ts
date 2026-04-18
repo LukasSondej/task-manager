@@ -32,7 +32,7 @@ export const auth = createSlice({
     },
 
   extraReducers: (builder) => {
-    builder.addCase(loginUser.pending, (state, action) => {
+    builder.addCase(loginUser.pending, (state) => {
       state.isLoading = true
       state.isAuthenticated = false
 
@@ -43,7 +43,7 @@ export const auth = createSlice({
       state.isAuthenticated = true
 
     })
-        builder.addCase(loginUser.rejected, (state, action) => {
+        builder.addCase(loginUser.rejected, (state) => {
       state.isLoading = false
       state.isAuthenticated = false
 

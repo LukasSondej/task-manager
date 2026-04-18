@@ -61,11 +61,11 @@ clearTasks: (state) => {
       state.items = action.payload
       state.isLoading = false
     })
-    builder.addCase(fetchTasks.pending, (state, action) => {
+    builder.addCase(fetchTasks.pending, (state) => {
       state.isLoading = true;
       state.isError = false
     })
-    builder.addCase(fetchTasks.rejected, (state, action) => {
+    builder.addCase(fetchTasks.rejected, (state) => {
       state.isError = true
       state.isLoading = false
     })
