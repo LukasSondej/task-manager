@@ -1,15 +1,7 @@
-# fly.toml app configuration file generated for task-manager-95icyw on 2026-04-18T06:39:10Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'task-manager-95icyw'
 primary_region = 'ams'
 
 [build]
-
-[deploy]
-
 
 [http_service]
   internal_port = 3000
@@ -23,7 +15,4 @@ primary_region = 'ams'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
-
-[machine]
   swap_size_mb = 512
