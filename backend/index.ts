@@ -14,7 +14,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 
-const port = process.env.PORT || 3000
+const port = 3000
 
 app.use("/tasks", taskRouter);
 app.use("/", authRouter);
