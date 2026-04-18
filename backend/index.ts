@@ -6,13 +6,15 @@ import authRouter from './routes/authRoutes';
 import userRouter from './routes/userRoutes';
 
 const app = express()
+
 const corsOptions = {
-  origin: 'http://localhost:5173',
- credentials: true
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
 }
 app.use(cors(corsOptions))
 app.use(express.json())
-const port = 3000
+
+const port = process.env.PORT || 3000
 
 app.use("/tasks", taskRouter);
 app.use("/", authRouter);
@@ -29,6 +31,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     error: err.message
   });
 });
-app.listen(port, () => {
+
+app.listen(port as number, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`)
 })
