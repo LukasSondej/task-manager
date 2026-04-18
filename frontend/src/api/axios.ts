@@ -26,7 +26,7 @@ if(!refreshToken){
   localStorage.removeItem("refreshToken")
 window.location.href = "/login"
 }else{
- const response = await axios.post("http://localhost:3000/refresh", {refreshToken: refreshToken})
+const response = await axios.post("https://task-manager-knb8cg.fly.dev/refresh", {refreshToken: refreshToken})
 localStorage.setItem("accessToken", response.data.accessToken)
 originalRequest.headers.Authorization = "Bearer " + response.data.accessToken;
 return instance(originalRequest);
