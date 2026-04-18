@@ -1,6 +1,6 @@
 import axios from "axios";
 const instance = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: 'https://task-manager-knb8cg.fly.dev',
 });
 instance.interceptors.request.use(function (config) {
 if(localStorage.getItem("accessToken")){
